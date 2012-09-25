@@ -33,7 +33,7 @@ Client.prototype.setup = function() {
     var ctx = this;
 
     setInterval( function() {
-        ctx.poll_snmp()
+        ctx.poll_snmp();
     }, 2000 );
 
     setInterval( function() {
@@ -62,7 +62,6 @@ Client.prototype.map_range = function( val, min1, max1, min2, max2 ) {
 Client.prototype.calculate_speed = function() {
     this.avg_bytes = (1.0-this.smoothing)*this.avg_bytes + this.smoothing*this.cur_kbps;
     kbps = this.cap_value( this.avg_bytes, this.min_kbps, this.max_kbps );
-    console.log("cur kbps", kbps);
     return this.map_range( kbps, this.min_kbps, this.max_kbps, 0.0, 1.0 );
 };
 
