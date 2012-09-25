@@ -1,6 +1,7 @@
 var  snmp   = require('snmp-native')
     ,util   = require('util')
-    ,events = require('events');
+    ,events = require('events')
+    ,common = require('./common');
 
 
 var Client = function( host, min_kbps, max_kbps, smoothing ) {
@@ -33,7 +34,7 @@ Client.prototype.setup = function() {
     var ctx = this;
 
     setInterval( function() {
-        ctx.poll_snmp();
+        ctx.poll_snmp()
     }, 2000 );
 
     setInterval( function() {
@@ -42,27 +43,10 @@ Client.prototype.setup = function() {
     }, 500 );
 };
 
-Client.prototype.cap_value = function( val, min, max ) {
-
-    if( val < min ) {
-        return min;
-    }
-
-    if( val > max ) {
-        return max;
-    }
-
-    return val;
-};
-
-Client.prototype.map_range = function( val, min1, max1, min2, max2 ) {
-    return min2 + (max2 - min2) * ((val - min1) / (max1 - min1));
-};
-
 Client.prototype.calculate_speed = function() {
     this.avg_bytes = (1.0-this.smoothing)*this.avg_bytes + this.smoothing*this.cur_kbps;
-    kbps = this.cap_value( this.avg_bytes, this.min_kbps, this.max_kbps );
-    return this.map_range( kbps, this.min_kbps, this.max_kbps, 0.0, 1.0 );
+    kbps = common.clamp( this.avg_bytes, this.min_kbps, this.max_kbps );
+    return common.map_range( kbps, this.min_kbps, this.max_kbps, 0.0, 1.0 );
 };
 
 Client.prototype.poll_snmp = function() {
