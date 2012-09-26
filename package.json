@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "author": "schinken <schinken@hackerspace-bamberg.de>",
     "description": "retrieve snmp traffic from openwrt router",
-    "main": "snmp_traffic"
+    "main": "snmp_traffic",
     "contributors": [
         {
             "name": "schinken",
