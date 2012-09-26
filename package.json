@@ -1,6 +1,6 @@
 {
-    "name": "nodejs-snmp-traffic",
-    "version": "0.1",
+    "name": "snmp-traffic",
+    "version": "0.1.0",
     "author": "schinken <schinken@hackerspace-bamberg.de>",
     "description": "retrieve snmp traffic from openwrt router",
     "contributors": [
