@@ -4,20 +4,14 @@ var  snmp   = require('snmp-native')
     ,common = require('./common');
 
 
-var Client = function( host, min_kbps, max_kbps, smoothing ) {
+var Client = function( host ) {
 
     events.EventEmitter.call(this);
-
-    this.min_kbps   = min_kbps || 100.0;
-    this.max_kbps   = max_kbps || 5000.0;
-    this.smoothing  = smoothing || 0.1;
 
     this.host       = host;
 
     this.last_time  = new Date();
     this.last_bytes = 0.0;
-    this.cur_kbps   = 0.0;
-    this.avg_bytes  = 0.0;
 
     this.session    = false;
 
@@ -36,17 +30,6 @@ Client.prototype.setup = function() {
     setInterval( function() {
         ctx.poll_snmp()
     }, 2000 );
-
-    setInterval( function() {
-        avg = ctx.calculate_speed();
-        ctx.emit('update', avg );
-    }, 500 );
-};
-
-Client.prototype.calculate_speed = function() {
-    this.avg_bytes = (1.0-this.smoothing)*this.avg_bytes + this.smoothing*this.cur_kbps;
-    kbps = common.clamp( this.avg_bytes, this.min_kbps, this.max_kbps );
-    return common.map_range( kbps, this.min_kbps, this.max_kbps, 0.0, 1.0 );
 };
 
 Client.prototype.poll_snmp = function() {
@@ -74,15 +57,13 @@ Client.prototype.poll_snmp = function() {
 
             // diff of interval in ms
             var diff_time = ( cur_time-client.last_time ) / 1000.0;
-            client.cur_kbps = diff_bytes / 1024.0 / diff_time;
             client.last_time = cur_time;
+            
+            var cur_kbps = diff_bytes / 1024.0 / diff_time;
+            client.emit('update', cur_kbps);
         }
 
     });
-};
-
-Client.prototype.on_update = function( cb ) {
-    this.on('update', cb );
 };
 
 module.exports = {
