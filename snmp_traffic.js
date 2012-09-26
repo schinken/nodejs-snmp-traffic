@@ -3,11 +3,12 @@ var  snmp   = require('snmp-native')
     ,events = require('events');
 
 
-var Client = function( host ) {
+var Client = function( host, oid ) {
 
     events.EventEmitter.call(this);
 
     this.host       = host;
+    this.oid        = oid || [1,3,6,1,2,1,2,2,1,10,5];
 
     this.last_time  = new Date();
     this.last_bytes = 0.0;
@@ -35,7 +36,7 @@ Client.prototype.poll_snmp = function() {
 
     var client = this;
 
-    this.session.get({ oid: [1,3,6,1,2,1,2,2,1,10,5] }, function( error, val ) {
+    this.session.get({ oid: this.oid }, function( error, val ) {
 
         if( error ) {
             console.log("Failed to retrieve snmp values");
