@@ -1,7 +1,6 @@
 var  snmp   = require('snmp-native')
     ,util   = require('util')
-    ,events = require('events')
-    ,common = require('./common');
+    ,events = require('events');
 
 
 var Client = function( host ) {
