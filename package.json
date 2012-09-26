@@ -1,0 +1,27 @@
+{
+    "name": "nodejs-snmp-traffic",
+    "version": "0.1",
+    "author": "schinken <schinken@hackerspace-bamberg.de>",
+    "description": "retrieve snmp traffic from openwrt router",
+    "contributors": [
+        {
+            "name": "schinken",
+            "email": "schinken@hackerspace-bamberg.de"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Schinken/nodejs-snmp-traffic.git"
+    },
+    "keywords": [
+        "snmp",
+        "openwrt",
+        "traffic"
+    ],
+    "dependencies" : {
+        "snmp-native": "latest"
+    },
+    "engine": {
+        "node": ">=0.6"
+    }
+}
