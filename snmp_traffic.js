@@ -27,8 +27,8 @@ Client.prototype.setup = function(eth_if) {
 
     this.get_interface_oid(eth_if, function(device_oid) {
         console.log("Retrieved device id", device_oid);
-        this.oid = [1,3,6,1,2,1,31,1,1,1,6,device_oid];
-        this.create_poll();
+        that.oid = [1,3,6,1,2,1,31,1,1,1,6,device_oid];
+        that.create_poll();
     });
     
 };
