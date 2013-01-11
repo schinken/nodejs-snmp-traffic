@@ -35,7 +35,7 @@ Client.prototype.create_poll = function() {
         // If snmp request hasnt finished after 20 sek, create a new one
         var interval_timeout = setTimeout( function() {
             that.create_poll();
-        }, 20000 );
+        }, this.interval*2.0 );
 
         that.poll_snmp(function() {
             clearTimeout(interval_timeout);
