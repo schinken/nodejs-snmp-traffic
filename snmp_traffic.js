@@ -26,7 +26,6 @@ Client.prototype.setup = function(eth_if) {
     this.session = new snmp.Session({ host: this.host });
 
     this.get_interface_oid(eth_if, function(device_oid) {
-        console.log("Retrieved device id", device_oid);
         that.oid = [1,3,6,1,2,1,31,1,1,1,6,device_oid];
         that.create_poll();
     });
