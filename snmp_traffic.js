@@ -3,28 +3,62 @@ var  snmp   = require('snmp-native')
     ,events = require('events');
 
 
-var Client = function( host, oid, interval ) {
+var Client = function( host, eth_if, interval ) {
 
     events.EventEmitter.call(this);
 
     this.host       = host;
-    this.oid        = oid || [1,3,6,1,2,1,2,2,1,10,5];
-    this.interval   = interval || 10;
+    this.interval   = interval || 10000;
 
     this.last_time  = new Date();
     this.last_bytes = 0.0;
 
     this.session    = false;
 
-    this.setup();
+    this.get_interface_oid(eth_if, function(device_oid) {
+        console.log("Retrieved device id", device_oid);
+        this.oid = [1,3,6,1,2,1,31,1,1,1,6,5, device_oid];
+        this.setup();
+    });
 };
 
 util.inherits(Client, events.EventEmitter);
 
 
 Client.prototype.setup = function() {
+
+    var that = this;
     this.session = new snmp.Session({ host: this.host });
     this.create_poll();
+    
+};
+
+Client.prototype.get_interface_oid = function(eth_if, cb) {
+
+    if(!cb) {
+        return false;
+    }
+
+    session.getSubtree({ oid: [1,3,6,1,2,1,2,2,1,2] }, function(error, varbinds) {
+
+        if(error) {
+            console.log("Failed to retrieve device oid for device", eth_if);
+        } else {
+            var result = varbinds.some(function(vb) {
+                if( vb.value == eth_if ) {
+                    var if_oid = vb.oid[vb.oid.length - 1];
+                    cb(if_oid);
+                    return true;
+                }
+            });
+
+            if(!result) {
+                console.log("Couldnt find device", eth_if);
+            }
+
+        }
+    });
+
 };
 
 Client.prototype.create_poll = function() {
