@@ -14,13 +14,13 @@ var Client = function( host, eth_if, interval ) {
     this.last_bytes = 0.0;
 
     this.session    = false;
-    this.setup();
+    this.setup(eth_if);
 };
 
 util.inherits(Client, events.EventEmitter);
 
 
-Client.prototype.setup = function() {
+Client.prototype.setup = function(eth_if) {
 
     var that = this;
     this.session = new snmp.Session({ host: this.host });
