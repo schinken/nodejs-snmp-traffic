@@ -3,12 +3,13 @@ var  snmp   = require('snmp-native')
     ,events = require('events');
 
 
-var Client = function( host, oid ) {
+var Client = function( host, oid, interval ) {
 
     events.EventEmitter.call(this);
 
     this.host       = host;
     this.oid        = oid || [1,3,6,1,2,1,2,2,1,10,5];
+    this.interval   = interval || 10;
 
     this.last_time  = new Date();
     this.last_bytes = 0.0;
@@ -22,17 +23,28 @@ util.inherits(Client, events.EventEmitter);
 
 
 Client.prototype.setup = function() {
-
     this.session = new snmp.Session({ host: this.host });
-
-    var ctx = this;
-
-    setInterval( function() {
-        ctx.poll_snmp()
-    }, 2000 );
+    this.create_poll();
 };
 
-Client.prototype.poll_snmp = function() {
+Client.prototype.create_poll = function() {
+  
+    var that = this;
+    setTimeout( function() {
+
+        // If snmp request hasnt finished after 20 sek, create a new one
+        var interval_timeout = setTimeout( function() {
+            that.create_poll();
+        }, 20000 );
+
+        that.poll_snmp(function() {
+            clearTimeout(interval_timeout);
+        });
+
+    }, this.interval );
+};
+
+Client.prototype.poll_snmp = function(cb) {
 
     var client = this;
 
@@ -61,6 +73,10 @@ Client.prototype.poll_snmp = function() {
             
             var cur_kbps = diff_bytes / 1024.0 / diff_time;
             client.emit('update', cur_kbps);
+        }
+
+        if(cb) {
+            process.nextTick(cb);    
         }
 
     });
