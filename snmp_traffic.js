@@ -14,12 +14,7 @@ var Client = function( host, eth_if, interval ) {
     this.last_bytes = 0.0;
 
     this.session    = false;
-
-    this.get_interface_oid(eth_if, function(device_oid) {
-        console.log("Retrieved device id", device_oid);
-        this.oid = [1,3,6,1,2,1,31,1,1,1,6,5, device_oid];
-        this.setup();
-    });
+    this.setup();
 };
 
 util.inherits(Client, events.EventEmitter);
@@ -29,7 +24,12 @@ Client.prototype.setup = function() {
 
     var that = this;
     this.session = new snmp.Session({ host: this.host });
-    this.create_poll();
+
+    this.get_interface_oid(eth_if, function(device_oid) {
+        console.log("Retrieved device id", device_oid);
+        this.oid = [1,3,6,1,2,1,31,1,1,1,6,device_oid];
+        this.create_poll();
+    });
     
 };
 
@@ -39,7 +39,7 @@ Client.prototype.get_interface_oid = function(eth_if, cb) {
         return false;
     }
 
-    session.getSubtree({ oid: [1,3,6,1,2,1,2,2,1,2] }, function(error, varbinds) {
+    this.session.getSubtree({ oid: [1,3,6,1,2,1,2,2,1,2] }, function(error, varbinds) {
 
         if(error) {
             console.log("Failed to retrieve device oid for device", eth_if);
